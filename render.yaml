@@ -1,0 +1,36 @@
+databases:
+  - name: blueprint-db
+    databaseName: blueprint
+    user: blueprint_user
+    plan: free
+
+services:
+  - type: web
+    name: blueprint-backend
+    runtime: python
+    rootDir: .
+    buildCommand: pip install -r backend/requirements.txt psycopg2-binary
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blueprint-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  - type: web
+    name: blueprint-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    staticPublishPath: ./dist
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        value: https://blueprint-backend.onrender.com/api
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
