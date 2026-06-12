@@ -1,35 +1,34 @@
 databases:
-  - name: blueprint-db
-    databaseName: blueprint
-    user: blueprint_user
+  - name: lsbi-db
+    databaseName: lsbi
+    user: lsbi_user
     plan: free
 
 services:
   - type: web
-    name: blueprint-backend
+    name: lsbi-backend
     runtime: python
     rootDir: .
     buildCommand: pip install -r backend/requirements.txt psycopg2-binary
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
-    plan: starter
+    plan: free
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: blueprint-db
+          name: lsbi-db
           property: connectionString
       - key: PYTHON_VERSION
         value: 3.11.0
 
-  - type: web
-    name: blueprint-frontend
+  - type: static
+    name: lsbi-frontend
     runtime: static
     rootDir: frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
-    staticPublishPath: ./dist
-    plan: starter
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://blueprint-backend.onrender.com/api
+        value: https://lsbi-backend.onrender.com/api
     routes:
       - type: rewrite
         source: /*
