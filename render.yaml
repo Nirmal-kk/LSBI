@@ -29,6 +29,8 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://lsbi-backend.onrender.com/api
+      - key: NPM_CONFIG_LEGACY_PEER_DEPS
+        value: "true"
     routes:
       - type: rewrite
         source: /*
